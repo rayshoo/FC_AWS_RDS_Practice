@@ -81,21 +81,55 @@
 
 </style>
 
+
 <script type="text/javascript">
 
 $(document).ready(function(){
-	Kakao.init('b30526376249afa40b9d4f5c977a841f');
+	<c:if test="${ user == null }" >
+	Kakao.init('006aad98a7f1ae322f21652a0c047ebb');
     // 카카오 로그인 버튼을 생성합니다.
     Kakao.Auth.createLoginButton({
       container: '#kakao-login-btn',
       success: function(authObj) {
         alert(JSON.stringify(authObj));
+       Kakao.API.request({url:'/v2/user/me',
+    	   success:function (res){
+    		   var id = res.id;
+    		   var email = (res.kaccount_email ? res.kaccount_email : '');
+    		   var nickname = (res.properties && res.properties.nickname ? res.properties.nickname : '');
+
+    		   alert(id);
+    		   alert(email);
+    		   alert(nickname);
+    		   nickname = '치킨';
+
+    		   $("#logininfo").text(nickname);
+    		   $.post("/kakaoLogin",
+	   			   {id:id, email : email, nickname : nickname}
+	   			 	, function (data){
+
+
+	   			 		if(data == 1){
+	   			 			alert("로그인이 완료 되었습니다.");
+	   			 			$("#kakao-login-btn").hide();
+
+	   			 		}
+	   			 	}
+    		   )
+
+
+
+    	   },
+    	   fail:function (error){
+				console.log(error);
+    	   }})
+
       },
       fail: function(err) {
          alert(JSON.stringify(err));
       }
     });
-
+    </c:if>
     var slideAelements = $('.slide-child')
 
 
@@ -134,14 +168,14 @@ $(document).ready(function(){
 
 <div class="itemListWrapper">
 <div class="itemList slide-child">
-   <div class="imageArea"><img src="img/img1.jpg"/></div>
+   <div class="imageArea"><img src="<c:out value='${ reviewList[0].s3ImageUrl }' />"/></div>
    <div class="reviewArea">
    	  <div class="reviewTitle" ><c:out value="${ reviewList[0].title }" /> </div>
       <textarea readonly><c:out value="${ reviewList[0].content }" /></textarea>
    </div>
 </div>
 <div class="itemList slide-child">
-   <div class="imageArea"><img src="img/img2.jpg"/></div>
+   <div class="imageArea"><img src="<c:out value='${ reviewList[1].s3ImageUrl }' />"/></div>
    <div class="reviewArea">
   	  <div class="reviewTitle" ><c:out value="${ reviewList[1].title }" /> </div>
       <textarea readonly><c:out value="${ reviewList[1].content }" /></textarea>
@@ -149,7 +183,7 @@ $(document).ready(function(){
    </div>
 </div>
 <div class="itemList slide-child">
-   <div class="imageArea"><img src="img/img3.jpg"/></div>
+   <div class="imageArea"><img src="<c:out value='${ reviewList[2].s3ImageUrl }' />"/></div>
    <div class="reviewArea" >
       <div class="reviewTitle" ><c:out value="${ reviewList[2].title }" /> </div>
       <textarea readonly><c:out value="${ reviewList[2].content }" /></textarea>
